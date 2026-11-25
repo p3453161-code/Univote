@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniVote | Your Vote, Your Voice</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6fa;
+  color: #142b4d;
+}
+
+header {
+  background: #102b55;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: bold;
+  color: #f5c542;
+}
+
+.hero {
+  background: linear-gradient(135deg,#102b55,#1764a5);
+  color: white;
+  text-align: center;
+  padding: 65px 20px;
+}
+
+.hero h1 {
+  font-size: 36px;
+}
+
+.hero p {
+  line-height: 1.7;
+}
+
+.container {
+  max-width: 750px;
+  margin: 30px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 15px #0001;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+}
+
+button {
+  background: #f5c542;
+  color: #102b55;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 7px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  opacity: .85;
+}
+
+.blue {
+  background: #102b55;
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.candidate {
+  border: 1px solid #ddd;
+  padding: 17px;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.candidate label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.candidate input {
+  width: auto;
+}
+
+.notice {
+  background: #fff5d6;
+  padding: 12px;
+  border-radius: 7px;
+  line-height: 1.5;
+}
+
+footer {
+  background: #102b55;
+  color: white;
+  text-align: center;
+  padding: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">UniVote.</div>
+  <button class="blue" onclick="openAdmin()">Admin</button>
+</header>
+
+<section class="hero">
+  <h1>Your Vote. Your Voice.</h1>
+  <p>A smarter way for universities to conduct elections.</p>
+  <p>Transparent. Accessible. Simple.</p>
+  <button onclick="show('university')">Get Started</button>
+</section>
+
+<div class="container">
+
+<section id="university" class="card hidden">
+  <h2>Student Access</h2>
+  <p>Select your university and academic details.</p>
+
+  <select id="school">
+    <option value="">Select University</option>
+    <option>Federal University of Technology, Akure</option>
+    <option>University of Lagos</option>
+    <option>University of Ibadan</option>
+    <option>Obafemi Awolowo University</option>
+  </select>
+
+  <select id="faculty">
+    <option value="">Select Faculty</option>
+    <option>Engineering</option>
+    <option>Science</option>
+    <option>Management Sciences</option>
+    <option>Agriculture</option>
+    <option>Environmental Sciences</option>
+  </select>
+
+  <select id="level">
+    <option value="">Select Level</option>
+    <option>100 Level</option>
+    <option>200 Level</option>
+    <option>300 Level</option>
+    <option>400 Level</option>
+    <option>500 Level</option>
+  </select>
+
+  <button onclick="goLogin()">Continue</button>
+</section>
+
+<section id="login" class="card hidden">
+  <h2>Student Login</h2>
+  <p id="schoolInfo"></p>
+
+  <input id="matric" placeholder="Matric Number">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <p class="notice">
+    Prototype demonstration only. Use fictional student details.
+  </p>
+</section>
+
+<section id="dashboard" class="card hidden">
+  <h2>Student Election Dashboard</h2>
+  <p id="welcome"></p>
+
+  <h3>Student Union Government Election</h3>
+  <p>Select one candidate for each position.</p>
+
+  <div id="ballot"></div>
+
+  <button onclick="submitBallot()">Submit My Vote</button>
+
+  <p id="message"></p>
+
+  <button class="blue" onclick="checkResults()">View Results</button>
+</section>
+
+<section id="results" class="card hidden">
+  <h2>Election Results</h2>
+  <div id="resultContent"></div>
+  <button onclick="show('dashboard')">Back</button>
+</section>
+
+<section id="adminLogin" class="card hidden">
+  <h2>Administrator Login</h2>
+  <input id="pin" type="password" placeholder="Admin PIN">
+  <button onclick="adminLogin()">Login</button>
+</section>
+
+<section id="admin" class="card hidden">
+  <h2>University Admin Dashboard</h2>
+
+  <h3>Election Management</h3>
+  <p>Total demonstration votes:</p>
+  <h1 id="totalVotes">0</h1>
+
+  <h3>Results Control</h3>
+  <p id="status"></p>
+
+  <button onclick="toggleResults()">Publish / Hide Results</button>
+
+  <h3>Election Results</h3>
+  <div id="adminResults"></div>
+
+  <button class="blue" onclick="resetDemo()">Reset Demonstration</button>
+</section>
+
+</div>
+
+<footer>
+  <h2>UniVote</h2>
+  <p>Your Vote. Your Voice. Your Future.</p>
+  <p>© 2026 UniVote</p>
+</footer>
+
+<script>
+
+const candidates = {
+  "President": ["Victor James", "Daniel Peter", "Samuel David"],
+  "Vice President": ["Michael John", "David Paul", "James Henry"],
+  "Secretary": ["Grace Mary", "Faith Esther", "Ruth Sarah"]
+};
+
+let votes = {};
+let votedStudents = [];
+let currentStudent = "";
+let resultsPublished = false;
+
+function show(id) {
+  document.querySelectorAll(".container > section")
+  .forEach(section => section.classList.add("hidden"));
+
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function goLogin() {
+  let school = document.getElementById("school").value;
+  let faculty = document.getElementById("faculty").value;
+  let level = document.getElementById("level").value;
+
+  if (!school || !faculty || !level) {
+    alert("Please complete all selections.");
+    return;
+  }
+
+  document.getElementById("schoolInfo").innerText =
+    school + " | " + faculty + " | " + level;
+
+  show("login");
+}
+
+function login() {
+  let matric = document.getElementById("matric").value.trim();
+  let password = document.getElementById("password").value;
+
+  if (!matric || !password) {
+    alert("Enter your matric number and password.");
+    return;
+  }
+
+  currentStudent = matric.toUpperCase();
+
+  if (votedStudents.includes(currentStudent)) {
+    alert("This demonstration student has already voted.");
+    return;
+  }
+
+  document.getElementById("welcome").innerText =
+    "Welcome, " + currentStudent;
+
+  createBallot();
+  show("dashboard");
+}
+
+function createBallot() {
+  let ballot = document.getElementById("ballot");
+  ballot.innerHTML = "";
+
+  for (let position in candidates) {
+    let html = "<h3>" + position + "</h3>";
+
+    candidates[position].forEach(candidate => {
+      html += `
+        <div class="candidate">
+          <label>
+            <input type="radio"
+              name="${position}"
+              value="${candidate}">
+            ${candidate}
+          </label>
+        </div>
+      `;
+    });
+
+    ballot.innerHTML += html;
+  }
+}
+
+function submitBallot() {
+  if (votedStudents.includes(currentStudent)) {
+    alert("You have already voted.");
+    return;
+  }
+
+  let selections = {};
+
+  for (let position in candidates) {
+    let selected = document.querySelector(
+      'input[name="' + position + '"]:checked'
+    );
+
+    if (!selected) {
+      alert("Please select a candidate for " + position);
+      return;
+    }
+
+    selections[position] = selected.value;
+  }
+
+  for (let position in selections) {
+    let key = position + "|" + selections[position];
+    votes[key] = (votes[key] || 0) + 1;
+  }
+
+  votedStudents.push(currentStudent);
+
+  document.getElementById("message").innerText =
+    "Your demonstration ballot was submitted successfully!";
+
+  alert("Thank you for voting!");
+
+  document.querySelectorAll("#ballot input")
+    .forEach(input => input.disabled = true);
+}
+
+function checkResults() {
+  if (!resultsPublished) {
+    alert("The administrator has not published the results.");
+    return;
+  }
+
+  displayResults("resultContent");
+  show("results");
+}
+
+function displayResults(id) {
+  let area = document.getElementById(id);
+  area.innerHTML = "";
+
+  for (let position in candidates) {
+    area.innerHTML += "<h3>" + position + "</h3>";
+
+    candidates[position].forEach(candidate => {
+      let key = position + "|" + candidate;
+
+      area.innerHTML += `
+        <div class="candidate">
+          ${candidate}: ${votes[key] || 0} vote(s)
+        </div>
+      `;
+    });
+  }
+}
+
+function openAdmin() {
+  show("adminLogin");
+}
+
+function adminLogin() {
+  if (document.getElementById("pin").value !== "2468") {
+    alert("Incorrect PIN.");
+    return;
+  }
+
+  updateAdmin();
+  show("admin");
+}
+
+function updateAdmin() {
+  document.getElementById("totalVotes").innerText =
+    votedStudents.length;
+
+  document.getElementById("status").innerText =
+    resultsPublished ? "Results are published." : "Results are hidden.";
+
+  displayResults("adminResults");
+}
+
+function toggleResults() {
+  resultsPublished = !resultsPublished;
+  updateAdmin();
+
+  alert(resultsPublished ?
+    "Results published!" : "Results hidden!");
+}
+
+function resetDemo() {
+  if (!confirm("Reset all demonstration votes?")) return;
+
+  votes = {};
+  votedStudents = [];
+  resultsPublished = false;
+
+  updateAdmin();
+  alert("Demonstration reset.");
+}
+
+</script>
+
+</body>
+    </html>
